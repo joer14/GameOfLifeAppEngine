@@ -1,0 +1,122 @@
+<html>
+<head>
+<script type="text/javascript" language="javascript">
+var numberCellsX=30;
+var numberCellsY=30;
+var cellsize = 10;
+var bw = numberCellsX * cellsize;
+var bh = numberCellsY * cellsize;
+//offset
+var p = 0;
+var cw = bw + (p*2) + 1;
+var ch = bh + (p*2) + 1;
+
+function draw() {
+	var canvas = document.getElementById("canvas");
+	var context = canvas.getContext("2d");
+	function drawBoard(){
+	//draw the grid
+	//verticle lines
+	for (var x = 0; x <= bw; x += cellsize) {
+	    context.moveTo(0.5 + x + p, p);
+	    context.lineTo(0.5 + x + p, bh + p);
+	}
+	
+	//horizontal lines
+	for (var x = 0; x <= bh; x += cellsize) {
+	    context.moveTo(p, 0.5 + x + p);
+	    context.lineTo(bw + p, 0.5 + x + p);
+	}
+	
+	context.strokeStyle = "black";
+	context.stroke();
+	}
+	
+	drawBoard();
+	
+}
+
+var alive = false;
+var life = new Array();
+life = [[1,2],[3,4],[5,6]];
+
+function painter(){
+	paintcord(5,2,true);
+	paintcord(2,3,true);
+	paintcord(2,2,false);
+	paintcord(0,0,false);
+}
+
+function paintcord(x,y,alive) {
+ var canvas = document.getElementById("canvas");
+ var ctx = canvas.getContext("2d");
+ if (alive) ctx.fillStyle = "rgb(200,0,0)";
+ else ctx.fillStyle = "rgb(255,255,255)";
+ ctx.fillRect (1 + x*cellsize + p, 1 + y*cellsize + p, cellsize-1, cellsize-1);
+}
+
+function clearIt() {
+ var canvas = document.getElementById("canvas");
+ var ctx = canvas.getContext("2d");
+ ctx.fillStyle = "rgb(255,255,255)";
+ for (var x = 0; x < bw; x += cellsize) {
+ 	for (var y = 0; y < bh; y += cellsize) {
+	    ctx.fillRect (1 + x + p, 1 + y + p, cellsize, cellsize);
+	    }
+ }
+ draw();
+}
+var inputs;
+function parseInput(){
+	var numgens = inputs[0];
+	var numIns = inputs[1];
+	alert("inputs[0]" + inputs[0]);
+	alert("inputs[1]" + inputs[1]);
+	for (var i = 2; i <= 2*numIns; i += 2){
+		//alert("adding cord (" + inputs[i] + "," + inputs[i+1] + ")");
+		paintcord (inputs[i],inputs[i+1], true)
+	} 
+}
+</script>
+
+
+
+</head>
+<body>
+<body onload="draw()">
+	<canvas id="canvas" width="350px" height="350px" style="background: #fff;     magrin:20px;"></canvas>
+<button onclick="clearIt()">Clear it</button>
+<button onclick="painter();">Cord</button>
+
+
+<input type="file" id="fileinput" />
+<script type="text/javascript">
+  
+  function readSingleFile(evt) {
+    //Retrieve the first (and only!) File from the FileList object
+    var f = evt.target.files[0]; 
+
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+	      var contents = e.target.result;
+        alert(contents);
+        document.getElementById('filecontents').innerHTML = contents;
+        
+        //work on regex for spliting all whitespace and newlines
+        inputs=contents.split(/\W/);
+        
+      }
+      r.readAsText(f);
+    } else { 
+      alert("Failed to load file");
+    }
+  }
+  document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+  
+ 
+</script>
+<span id='filecontents'>File Contents...</span>.
+<input type='button' onclick='parseInput()' value='Change Text'/>
+</body>
+</html>
