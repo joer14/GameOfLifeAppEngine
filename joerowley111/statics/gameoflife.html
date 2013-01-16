@@ -70,13 +70,37 @@ var inputs;
 function parseInput(){
 	var numgens = inputs[0];
 	var numIns = inputs[1];
-	alert("inputs[0]" + inputs[0]);
-	alert("inputs[1]" + inputs[1]);
+	document.getElementById('numberToRun').innerHTML = inputs[0];
+	//alert("inputs[0]" + inputs[0]);
+	//alert("inputs[1]" + inputs[1]);
 	for (var i = 2; i <= 2*numIns; i += 2){
 		//alert("adding cord (" + inputs[i] + "," + inputs[i+1] + ")");
 		paintcord (inputs[i],inputs[i+1], true)
 	} 
 }
+
+
+function cell(x,y,alive,count){
+	this.x=x;
+	this.y=y;
+	this.alive=alive;
+	this.count=count;
+	this.changeState=changeState;
+	function changeState(){
+		this.alive= !this.alive;
+	}
+	this.Neighbor=Neighbor
+	function Neighbor(numBros){
+		this.count=numBros;
+	}
+}
+
+
+function testCell(x,y,alive,count){
+	var tmpcell = new cell(x,y,alive,count);
+	alert(tmpcell.x + " , " tmpcell.y);
+}
+
 </script>
 
 
@@ -85,10 +109,8 @@ function parseInput(){
 <body>
 <body onload="draw()">
 	<canvas id="canvas" width="350px" height="350px" style="background: #fff;     magrin:20px;"></canvas>
-<button onclick="clearIt()">Clear it</button>
-<button onclick="painter();">Cord</button>
 
-
+<br>
 <input type="file" id="fileinput" />
 <script type="text/javascript">
   
@@ -100,12 +122,12 @@ function parseInput(){
       var r = new FileReader();
       r.onload = function(e) { 
 	      var contents = e.target.result;
-        alert(contents);
-        document.getElementById('filecontents').innerHTML = contents;
+        //alert(contents);
         
         //work on regex for spliting all whitespace and newlines
         inputs=contents.split(/\W/);
-        
+        //autoload once select file
+        parseInput()
       }
       r.readAsText(f);
     } else { 
@@ -116,7 +138,20 @@ function parseInput(){
   
  
 </script>
-<span id='filecontents'>File Contents...</span>.
-<input type='button' onclick='parseInput()' value='Change Text'/>
+<!--
+<br>
+<input type='button' onclick='parseInput()' value='Load File'/>
+-->
+<br>
+Number of Generations ran 0 of <span id='numberToRun'>0</span>.
+<br>
+<button onclick="clearIt()">Clear it</button>
+<br>
+<button onclick="painter();">Cord</button>
+<br>
+<button onclick="testCell(2,2,true,4);">Create Cell</button>
+
+
+
 </body>
 </html>
