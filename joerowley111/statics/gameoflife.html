@@ -41,18 +41,23 @@ var life = new Array();
 life = [[1,2],[3,4],[5,6]];
 
 function painter(){
-	paintcord(5,2,true);
-	paintcord(2,3,true);
-	paintcord(2,2,false);
-	paintcord(0,0,false);
+	paintCord(5,2,true);
+	paintCord(2,3,true);
+	paintCord(2,2,false);
+	paintCord(0,0,false);
 }
 
-function paintcord(x,y,alive) {
+function paintCord(x,y,alive) {
+ //alert("painting cord" + x +", " + y + ", " + alive);
  var canvas = document.getElementById("canvas");
  var ctx = canvas.getContext("2d");
  if (alive) ctx.fillStyle = "rgb(200,0,0)";
- else ctx.fillStyle = "rgb(255,255,255)";
+ else ctx.fillStyle = "rgb(200,200,200)";
  ctx.fillRect (1 + x*cellsize + p, 1 + y*cellsize + p, cellsize-1, cellsize-1);
+}
+
+function paintCell(cell){
+	paintCord(cell.x, cell.y, cell.alive);
 }
 
 function clearIt() {
@@ -66,7 +71,9 @@ function clearIt() {
  }
  draw();
 }
+
 var inputs;
+
 function parseInput(){
 	var numgens = inputs[0];
 	var numIns = inputs[1];
@@ -75,13 +82,11 @@ function parseInput(){
 	//alert("inputs[1]" + inputs[1]);
 	for (var i = 2; i <= 2*numIns; i += 2){
 		//alert("adding cord (" + inputs[i] + "," + inputs[i+1] + ")");
-		paintcord (inputs[i],inputs[i+1], true)
+		//paintCord (inputs[i],inputs[i+1], true)
+		addCellToGrid(inputs[i],inputs[i+1], true);
 	} 
 }
 
-
-/*
-Test
 function cell(x,y,alive,count){
 	this.x=x;
 	this.y=y;
@@ -97,13 +102,80 @@ function cell(x,y,alive,count){
 	}
 }
 
-
 function testCell(x,y,alive,count){
-	var tmpcell = new cell(x,y,alive,count);
-	alert(tmpcell.x + " , " tmpcell.y);
+	var tmpcell = new cell(x,y,alive, count);
+	//alert(tmpcell.alive);
+	//paintCord(tmpcell.x,tmpcell.y,tmpcell.alive);
+	//addCellToGrid(5,5,true,0);
 }
-*/
 
+var liveArray = new Array();
+//liveArray[0] = new cell(2,12,true,4);
+var broArray = new Array();
+var endOfLiveArray = 0;
+var endOfBroArray = 0;
+
+var grid=new Array(30)
+for (i=0; i <30; i++){
+	grid [i]=new Array(30);
+}	
+//grid[0][0]=liveArray[0];
+
+function addCellToGrid(x,y,alive,count){
+	var newcell = new cell(x,y,alive,count);
+   	if (alive){
+	   	liveArray[endOfLiveArray] = newcell;
+	    grid[x][y] = newcell;
+	    endOfLiveArray++;
+	    debugCell(newcell)
+   	}
+   	else{
+	   	broArray[endOfBroArray] = newcell;
+	   	grid[x][y] = newcell;
+	   	endOfBroArray++;
+   	}	
+   	//paintCell(newcell);
+}
+
+function checkBros(cell){
+	alert(cell.x + ", " + cell.y)
+	x = parseInt(cell.x);
+	y = parseInt(cell.y);
+	for (i=-1; i<2; i++){
+		for (j=-1; j<2; j++){
+			if (0 < (x+i) < 30 && 0 < (y+j) < 30){
+				//if (x!=(x+i) && y!=(y+j)) {
+//				    alert([x+i] +" , " + [y+j]);
+					
+					//alert([x+i] +" , " + [y+j]);
+					if (grid[x+i][y+j] == null) {
+					addCellToGrid(x+i,y+j,false,1);
+					}
+					else 
+					alert("something at " + (x+i) + ", " + (y+j));
+					//debugCell(grid[(x+i)][(y+j)]);
+					}
+//}
+		}
+		j=-1;
+	}
+}
+
+function debugCell(cell){
+	alert(cell.x + ", "+ cell.y + " " + cell.alive + ", " + cell.count);
+}
+
+function printCells(){
+	//alert(liveArray[0].x + ", " + liveArray[0].y);
+	for (i=0; i<endOfLiveArray; i++){
+	paintCell(liveArray[i]);	
+	}
+	alert("live printed");
+	for (i=0; i<endOfBroArray; i++){
+	paintCell(broArray[i]);	
+	}
+	checkBros(liveArray[0]);
+}
 </script>
 
 
@@ -153,8 +225,7 @@ Number of Generations ran 0 of <span id='numberToRun'>0</span>.
 <button onclick="painter();">Cord</button>
 <br>
 <button onclick="testCell(2,2,true,4);">Create Cell</button>
-
-
+<button onclick="printCells();">Print Cells</button>
 
 </body>
 </html>
