@@ -83,7 +83,7 @@ function parseInput(){
 	for (var i = 2; i <= 2*numIns; i += 2){
 		//alert("adding cord (" + inputs[i] + "," + inputs[i+1] + ")");
 		//paintCord (inputs[i],inputs[i+1], true)
-		addCellToGrid(inputs[i],inputs[i+1], true);
+		addCellToGrid(inputs[i],inputs[i+1], true, 0);
 	} 
 }
 
@@ -138,31 +138,47 @@ function addCellToGrid(x,y,alive,count){
 }
 
 function checkBros(cell){
-	alert(cell.x + ", " + cell.y)
+	alert("Checking Bros for" + cell.x + ", " + cell.y)
 	x = parseInt(cell.x);
 	y = parseInt(cell.y);
 	for (i=-1; i<2; i++){
 		for (j=-1; j<2; j++){
 			if (0 < (x+i) < 30 && 0 < (y+j) < 30){
-				//if (x!=(x+i) && y!=(y+j)) {
-//				    alert([x+i] +" , " + [y+j]);
-					
-					//alert([x+i] +" , " + [y+j]);
+				if (x == (x+i) && y == (y+j)) {
+				//alert("its me");
+				}
+				else{
 					if (grid[x+i][y+j] == null) {
 					addCellToGrid(x+i,y+j,false,1);
+					//alert("adding cell to grid " + (x+i) + ", " + (y+j));
 					}
-					else 
-					alert("something at " + (x+i) + ", " + (y+j));
-					//debugCell(grid[(x+i)][(y+j)]);
+					else { 
+					//alert(grid[x+i][y+i] + "something at " + (x+i) + ", " + (y+j));
+					if (grid[(x+i)][(y+j)].alive == true) {
+						//alert("nieghbor alive");
+						grid[x][y].count++;
+						}
 					}
-//}
+					}
+				}
 		}
-		j=-1;
 	}
 }
 
 function debugCell(cell){
 	alert(cell.x + ", "+ cell.y + " " + cell.alive + ", " + cell.count);
+}
+
+function debugAll(cell){
+	for (i=0; i<30; i++){
+		for (j=0; j<30; j++){
+			if (grid[i][j] != null){
+//				if (grid[i][j].alive == true) debugCell(grid[i][j]);
+				debugCell(grid[i][j]);
+
+			}
+		}
+	}
 }
 
 function printCells(){
@@ -174,7 +190,12 @@ function printCells(){
 	for (i=0; i<endOfBroArray; i++){
 	paintCell(broArray[i]);	
 	}
+	alert(liveArray.length);
+	for (i=0; i<liveArray.length; i++){
+	//checkBros(liveArray[i]);
+	}
 	checkBros(liveArray[0]);
+	checkBros(liveArray[1]);
 }
 </script>
 
@@ -226,6 +247,7 @@ Number of Generations ran 0 of <span id='numberToRun'>0</span>.
 <br>
 <button onclick="testCell(2,2,true,4);">Create Cell</button>
 <button onclick="printCells();">Print Cells</button>
+<button onclick="debugAll();">Debug All Cells</button>
 
 </body>
 </html>
