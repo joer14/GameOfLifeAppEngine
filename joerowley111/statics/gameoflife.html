@@ -48,12 +48,12 @@ function painter(){
 }
 
 function paintCord(x,y,alive) {
- //alert("painting cord" + x +", " + y + ", " + alive);
+ //console.log("painting cord" + x +", " + y + ", " + alive);
  var canvas = document.getElementById("canvas");
- var ctx = canvas.getContext("2d");
- if (alive) ctx.fillStyle = "rgb(200,0,0)";
- else ctx.fillStyle = "rgb(200,200,200)";
- ctx.fillRect (1 + x*cellsize + p, 1 + y*cellsize + p, cellsize-1, cellsize-1);
+ var canvasContext = canvas.getContext("2d");
+ if (alive) canvasContext.fillStyle = "rgb(200,0,0)";
+ else canvasContext.fillStyle = "rgb(200,200,200)";
+ canvasContext.fillRect (1 + x*cellsize + p, 1 + y*cellsize + p, cellsize-1, cellsize-1);
 }
 
 function paintCell(cell){
@@ -62,11 +62,11 @@ function paintCell(cell){
 
 function clearIt() {
  var canvas = document.getElementById("canvas");
- var ctx = canvas.getContext("2d");
- ctx.fillStyle = "rgb(255,255,255)";
+ var canvasContext = canvas.getContext("2d");
+ canvasContext.fillStyle = "rgb(255,255,255)";
  for (var x = 0; x < bw; x += cellsize) {
  	for (var y = 0; y < bh; y += cellsize) {
-	    ctx.fillRect (1 + x + p, 1 + y + p, cellsize, cellsize);
+	    canvasContext.fillRect (1 + x + p, 1 + y + p, cellsize, cellsize);
 	    }
  }
  draw();
@@ -78,10 +78,10 @@ function parseInput(){
 	var numgens = inputs[0];
 	var numIns = inputs[1];
 	document.getElementById('numberToRun').innerHTML = inputs[0];
-	//alert("inputs[0]" + inputs[0]);
-	//alert("inputs[1]" + inputs[1]);
+	//console.log("inputs[0]" + inputs[0]);
+	//console.log("inputs[1]" + inputs[1]);
 	for (var i = 2; i <= 2*numIns; i += 2){
-		//alert("adding cord (" + inputs[i] + "," + inputs[i+1] + ")");
+		//console.log("adding cord (" + inputs[i] + "," + inputs[i+1] + ")");
 		//paintCord (inputs[i],inputs[i+1], true)
 		addCellToGrid(inputs[i],inputs[i+1], true, 0);
 	} 
@@ -104,7 +104,7 @@ function cell(x,y,alive,count){
 
 function testCell(x,y,alive,count){
 	var tmpcell = new cell(x,y,alive, count);
-	//alert(tmpcell.alive);
+	//console.log(tmpcell.alive);
 	//paintCord(tmpcell.x,tmpcell.y,tmpcell.alive);
 	//addCellToGrid(5,5,true,0);
 }
@@ -115,10 +115,12 @@ var broArray = new Array();
 var endOfLiveArray = 0;
 var endOfBroArray = 0;
 
+//initialize the grid/2d array
 var grid=new Array(30)
 for (i=0; i <30; i++){
 	grid [i]=new Array(30);
 }	
+
 //grid[0][0]=liveArray[0];
 
 function addCellToGrid(x,y,alive,count){
@@ -138,35 +140,51 @@ function addCellToGrid(x,y,alive,count){
 }
 
 function checkBros(cell){
-	alert("Checking Bros for" + cell.x + ", " + cell.y)
+	console.log("Checking Bros for" + cell.x + ", " + cell.y)
 	x = parseInt(cell.x);
 	y = parseInt(cell.y);
 	for (i=-1; i<2; i++){
 		for (j=-1; j<2; j++){
 			if (0 < (x+i) < 30 && 0 < (y+j) < 30){
+
 				if (x == (x+i) && y == (y+j)) {
-				//alert("its me");
+				//console.log("its me");
 				}
+
 				else{
 					if (grid[x+i][y+j] == null) {
 					addCellToGrid(x+i,y+j,false,1);
-					//alert("adding cell to grid " + (x+i) + ", " + (y+j));
+					//console.log("adding cell to grid " + (x+i) + ", " + (y+j));
 					}
 					else { 
-					//alert(grid[x+i][y+i] + "something at " + (x+i) + ", " + (y+j));
+					//console.log(grid[x+i][y+i] + "something at " + (x+i) + ", " + (y+j));
 					if (grid[(x+i)][(y+j)].alive == true) {
-						//alert("nieghbor alive");
-						grid[x][y].count++;
+						//console.log("nieghbor alive");
+						//if the cell is itself subtract one neighbor
+						if (x+i == x && y+j == j) {
+						grid[x][y].count--;
+						alert("wtf?");
 						}
+						grid[x][y].count++;
+					}else {
+						grid[x+i][y+j].count++;
 					}
+						
 					}
+					
+					}
+					
 				}
 		}
 	}
 }
 
 function debugCell(cell){
-	alert(cell.x + ", "+ cell.y + " " + cell.alive + ", " + cell.count);
+	console.log(cell.x + ", "+ cell.y + " " + cell.alive + ", " + cell.count);
+}
+
+function start() {
+
 }
 
 function debugAll(cell){
@@ -174,37 +192,62 @@ function debugAll(cell){
 		for (j=0; j<30; j++){
 			if (grid[i][j] != null){
 //				if (grid[i][j].alive == true) debugCell(grid[i][j]);
-				debugCell(grid[i][j]);
-
+				//debugCell(grid[i][j]);
+				cell = grid[i][j];
+				var myspan = document.getElementById("stats");
+			    myspan.onclick = function() { alert ("hi"); };
+			
+			    var mydiv = document.getElementById("mydiv");
+			    var newcontent = document.createElement('div');
+			    newcontent.innerHTML = (cell.x + ", "+ cell.y + " " + cell.alive + ", " + cell.count + "<br>");
+			    while (newcontent.firstChild) {
+			        mydiv.appendChild(newcontent.firstChild);
+			    }
 			}
 		}
 	}
 }
 
 function printCells(){
-	//alert(liveArray[0].x + ", " + liveArray[0].y);
+	//console.log(liveArray[0].x + ", " + liveArray[0].y);
 	for (i=0; i<endOfLiveArray; i++){
-	paintCell(liveArray[i]);	
+		paintCell(liveArray[i]);	
 	}
-	alert("live printed");
+	console.log("live printed");
 	for (i=0; i<endOfBroArray; i++){
-	paintCell(broArray[i]);	
+		paintCell(broArray[i]);	
 	}
-	alert(liveArray.length);
-	for (i=0; i<liveArray.length; i++){
-	//checkBros(liveArray[i]);
+	console.log(liveArray.length);
+	//console.log("number to check " + endOfLiveArray);
+	for (k=0; k<endOfLiveArray; k++){
+		console.log("number " + k);
+	//	debugCell(liveArray[k]);
+		checkBros(liveArray[k]);
 	}
-	checkBros(liveArray[0]);
+	
+	/*
+checkBros(liveArray[0]);
 	checkBros(liveArray[1]);
+*/
 }
-</script>
 
+
+</script>
 
 
 </head>
 <body>
 <body onload="draw()">
-	<canvas id="canvas" width="350px" height="350px" style="background: #fff;     magrin:20px;"></canvas>
+	<table border="1">
+<tr>
+<td><canvas id="canvas" width="350px" height="350px" style="background: #fff;     magrin:20px;"></canvas></td>
+<td><div id='mydiv'>
+<span id='stats'>0</span>
+</div></td>
+</tr>
+</table>
+
+	
 
 <br>
 <input type="file" id="fileinput" />
@@ -218,7 +261,7 @@ function printCells(){
       var r = new FileReader();
       r.onload = function(e) { 
 	      var contents = e.target.result;
-        //alert(contents);
+        //console.log(contents);
         
         //work on regex for spliting all whitespace and newlines
         inputs=contents.split(/\W/);
@@ -227,7 +270,7 @@ function printCells(){
       }
       r.readAsText(f);
     } else { 
-      alert("Failed to load file");
+      console.log("Failed to load file");
     }
   }
   document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
@@ -248,6 +291,8 @@ Number of Generations ran 0 of <span id='numberToRun'>0</span>.
 <button onclick="testCell(2,2,true,4);">Create Cell</button>
 <button onclick="printCells();">Print Cells</button>
 <button onclick="debugAll();">Debug All Cells</button>
+
+<br>
 
 </body>
 </html>
