@@ -57,7 +57,9 @@ function paintCord(x,y,alive) {
 }
 
 function paintCell(cell){
+	if (cell != null){
 	paintCord(cell.x, cell.y, cell.alive);
+	}
 }
 
 function clearIt() {
@@ -126,11 +128,11 @@ for (i=0; i <30; i++){
 
 function addCellToGrid(x,y,alive,count){
 	var newcell = new cell(x,y,alive,count);
-   	if (alive){
+   	if (alive == true){
 	   	liveArray[liveArray.length] = newcell;
 	    grid[x][y] = newcell;
 	    endOfLiveArray++;
-	    debugCell(newcell)
+	    debugCell(newcell);
    	}
    	else{
 	   	broArray[endOfBroArray] = newcell;
@@ -141,10 +143,10 @@ function addCellToGrid(x,y,alive,count){
    	//paintCell(newcell);
 }
 
-function checkBros(cell){
-	console.log("Checking Bros for" + cell.x + ", " + cell.y)
-	x = parseInt(cell.x);
-	y = parseInt(cell.y);
+function checkBros(celli){
+	console.log("Checking Bros for" + celli.x + ", " + celli.y)
+	x = parseInt(celli.x);
+	y = parseInt(celli.y);
 	for (i=-1; i<2; i++){
 		for (j=-1; j<2; j++){
 			if (0 < (x+i) < 30 && 0 < (y+j) < 30){
@@ -154,7 +156,8 @@ function checkBros(cell){
 				}
 				else{
 					if (grid[x+i][y+j] == null) {
-					addCellToGrid(x+i,y+j,false,0);
+						addCellToGrid(x+i,y+j,false,0);
+
 					//console.log("adding cell to grid " + (x+i) + ", " + (y+j));
 					}
 					//console.log(grid[x+i][y+i] + "something at " + (x+i) + ", " + (y+j));
@@ -214,7 +217,7 @@ function printCells(){
 		console.log(liveArray[i].x + ", " + liveArray[i].y);
 	}
 	console.log("live have been printed");
-	for (i=0; i<endOfBroArray; i++){
+	for (i=0; i<broArray.length-1; i++){
 		paintCell(broArray[i]);	
 	}
 	console.log(liveArray.length);
@@ -229,43 +232,114 @@ checkBros(liveArray[0]);
 function checker(){
 	for (k=0; k<endOfLiveArray; k++){
 		console.log("number " + k);
-	//	debugCell(liveArray[k]);
+		debugCell(liveArray[k]);
 		checkBros(liveArray[k]);
 	}
 }
 
-function subtractOneFromBros(cell){
-	
+function cleanupBros(){
+	// x = parseInt(cell.x);
+	// y = parseInt(cell.y);
+	for (i=0; i<broArray.length; i++){
+		if (broArray[i].count = 0) broArray.remove(i);
+	}
+	//grid[cell.x][cell.y].alive = false;
+	// for (i=-1; i<2; i++){
+	// 	for (j=-1; j<2; j++){
+	// 		if (0 < (x+i) < 30 && 0 < (y+j) < 30){
+	// 			if (x == (x+i) && y == (y+j)) console.log("its me");
+	// 			else if (grid[x+i][y+j].count <= 1){
+
+	// 			}
+	// 		}	
+	// 	}				
+	// }
 }
+
+function zeroBroCount(){
+	console.log("zeroing cell counts...")
+	for (i=0; i<liveArray.length; i++){
+		cell=liveArray[i];
+		cell.count = 0;
+	}	
+	for (i=0; i<broArray.length-1; i++){
+		broArray[i].count = 0;
+		//
+	}
+	cleanupBros();	
+			
+}
+
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
 
 function step(){
 	console.log("stepping");
 	printLiveArray();
-	for (i=0; i<endOfLiveArray; i++){
-		var theCell = liveArray[i];
-		console.log("liveArray[" + i + "]");
+	for (index=0; index<broArray[broArray.length-1]; index++){
+		var theCell = broArray[index];
+		console.log("broArray[" + index + "]");
 		//debugCell(liveArray[i]);
+	
+			if (broArray[index].count == 3){
+				console.log("we have birth! " + theCell.x + ", " + theCell.y);
+				addCellToGrid(theCell.x, theCell.y, true, 0);
+				broArray.remove(index);
+			}
+		
+	}
+	for (index=0; index<liveArray.length; index++){
+		var theCell = liveArray[index];
+		console.log("liveArray[" + index + "]");
+		//debugCell(liveArray[i]);
+		if(theCell == null) continue;
 		if (theCell.count < 2  && theCell.alive == true){
 			console.log("deleting cell " + theCell.x + ", " + theCell.y + "because < 2");
+			liveArray.remove(index);
+			
 			theCell.alive = false;
-			var lastLiveElement=liveArray[endOfLiveArray-1];
-			liveArray[i] = lastLiveElement;
-			liveArray[endOfLiveArray-1]=null;
-			broArray[endOfBroArray-1]=theCell;
-			grid[theCell.x][theCell.y]=theCell;
+			cleanupBros(theCell);
+			grid[theCell.x][theCell.y].count = 0;
+			grid[theCell.x][theCell.y].alive = false;
+			//var lastLiveElement=liveArray[liveArray.length-1];
+			//liveArray[i] = null;
+			//liveArray[i] = lastLiveElement;
+			//liveArray[liveArray.length-1]=null;
+			broArray[broArray.length]=theCell;
+			
 			endOfLiveArray--;
-			i--;
+			index--;
 		}
 		if (theCell.count > 3  && theCell.alive == true){
 			console.log("deleting cell " + theCell.x + ", " + theCell.y + "because >3");
+			console.log("deleting cell " + theCell.x + ", " + theCell.y + "because < 2");
+			liveArray.remove(index);
+			
 			theCell.alive = false;
-			var lastLiveElement=liveArray[endOfLiveArray-1];
-			liveArray[i] = lastLiveElement;
-			liveArray[endOfLiveArray]=null;
-			broArray[endOfBroArray]=theCell;
-			grid[theCell.x][theCell.y]=theCell;
+			cleanupBros(theCell);
+			grid[theCell.x][theCell.y].count = 0;
+			grid[theCell.x][theCell.y].alive = false;
+			//var lastLiveElement=liveArray[liveArray.length-1];
+			//liveArray[i] = null;
+			//liveArray[i] = lastLiveElement;
+			//liveArray[liveArray.length-1]=null;
+			broArray[broArray.length]=theCell;
+			
 			endOfLiveArray--;
+			index--;
+			// theCell.alive = false;
+			// //cleanupBros(theCell);
+			// var lastLiveElement=liveArray[endOfLiveArray-1];
+			// liveArray[index] = lastLiveElement;
+			// liveArray[endOfLiveArray]=null;
+			// broArray[endOfBroArray]=theCell;
+			// grid[theCell.x][theCell.y]=theCell;
+			// endOfLiveArray--;
 		}
+		
 	printLiveArray();
 	}
 	/*
@@ -285,12 +359,25 @@ function step(){
 }
 
 function printLiveArray(){
-	for (indexy=0; indexy<endOfLiveArray ; indexy++){
+	for (indexy=0; indexy<endOfLiveArray-1 ; indexy++){
 		console.log("-------liveArray[" + indexy+"]= " + liveArray[indexy].x + ", "+ liveArray[indexy].y + " " + liveArray[indexy].alive + " " + liveArray[indexy].count ); 
+	}
+	for (indexy=0; indexy<endOfBroArray-1 ; indexy++){
+		if(broArray[indexy] != null){
+		console.log("-------broArray[" + indexy+"]= " + broArray[indexy].x + ", "+ broArray[indexy].y + " " + broArray[indexy].alive + " " + broArray[indexy].count ); 
+		}
 	}
 	
 	
 }
+
+function step2(){
+	checker();
+	printCells();
+	step();
+	zeroBroCount();
+}
+
 </script>
 
 
@@ -351,7 +438,11 @@ Number of Generations ran 0 of <span id='numberToRun'>0</span>.
 <button onclick="printCells();">Print Cells</button>
 <button onclick="debugAll();">Debug All Cells</button>
 <button onclick="checker();">CheckBros</button>
-<button onclick="step();">CheckBros</button>
+<button onclick="step();">Step</button>
+<button onclick="zeroBroCount();">Zero All Counts</button>
+<button onclick="printLiveArray();">Print Live Array</button>
+<button onclick="step2();">Real step</button>
+
 <br>
 
 </body>
