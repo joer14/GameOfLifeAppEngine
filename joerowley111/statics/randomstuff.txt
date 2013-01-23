@@ -1,0 +1,41 @@
+randomstuff
+function checker(){
+	for (k=0; k<endOfLiveArray; k++){
+		console.log("number " + k);
+		debugCell(liveArray[k]);
+		checkBros(liveArray[k]);
+	}
+}
+
+function cleanupBros(){
+	// x = parseInt(cell.x);
+	// y = parseInt(cell.y);
+	for (i=0; i<broArray.length; i++){
+		if (broArray[i].count = 0) broArray.remove(i);
+	}
+	//grid[cell.x][cell.y].alive = false;
+	// for (i=-1; i<2; i++){
+	// 	for (j=-1; j<2; j++){
+	// 		if (0 < (x+i) < 30 && 0 < (y+j) < 30){
+	// 			if (x == (x+i) && y == (y+j)) console.log("its me");
+	// 			else if (grid[x+i][y+j].count <= 1){
+
+	// 			}
+	// 		}	
+	// 	}				
+	// }
+}
+
+function zeroBroCount(){
+	console.log("zeroing cell counts...")
+	for (i=0; i<liveArray.length; i++){
+		cell=liveArray[i];
+		cell.count = 0;
+	}	
+	for (i=0; i<broArray.length-1; i++){
+ 		broArray[i].count = 0;
+		//
+	}
+	cleanupBros();	
+			
+}
