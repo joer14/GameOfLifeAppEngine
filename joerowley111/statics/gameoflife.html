@@ -61,6 +61,7 @@ function paintCell(cell){
 }
 
 function clearIt() {
+ console.log("clearing it");
  var canvas = document.getElementById("canvas");
  var canvasContext = canvas.getContext("2d");
  canvasContext.fillStyle = "rgb(255,255,255)";
@@ -126,7 +127,7 @@ for (i=0; i <30; i++){
 function addCellToGrid(x,y,alive,count){
 	var newcell = new cell(x,y,alive,count);
    	if (alive){
-	   	liveArray[endOfLiveArray] = newcell;
+	   	liveArray[liveArray.length] = newcell;
 	    grid[x][y] = newcell;
 	    endOfLiveArray++;
 	    debugCell(newcell)
@@ -136,6 +137,7 @@ function addCellToGrid(x,y,alive,count){
 	   	grid[x][y] = newcell;
 	   	endOfBroArray++;
    	}	
+   	printLiveArray();
    	//paintCell(newcell);
 }
 
@@ -146,31 +148,31 @@ function checkBros(cell){
 	for (i=-1; i<2; i++){
 		for (j=-1; j<2; j++){
 			if (0 < (x+i) < 30 && 0 < (y+j) < 30){
-
 				if (x == (x+i) && y == (y+j)) {
-				//console.log("its me");
+				console.log("its me");
+				//grid[x][y].count--;
 				}
-
 				else{
 					if (grid[x+i][y+j] == null) {
-					addCellToGrid(x+i,y+j,false,1);
+					addCellToGrid(x+i,y+j,false,0);
 					//console.log("adding cell to grid " + (x+i) + ", " + (y+j));
 					}
-					else { 
 					//console.log(grid[x+i][y+i] + "something at " + (x+i) + ", " + (y+j));
 					if (grid[(x+i)][(y+j)].alive == true) {
 						//console.log("nieghbor alive");
 						//if the cell is itself subtract one neighbor
 						if (x+i == x && y+j == j) {
-						grid[x][y].count--;
+						
 						alert("wtf?");
 						}
+						console.log("incrementing count of "+ x + ", " + y);
+						console.log("because of " + (x+i) + ", " + (y+j) );
 						grid[x][y].count++;
 					}else {
 						grid[x+i][y+j].count++;
 					}
 						
-					}
+					
 					
 					}
 					
@@ -181,10 +183,6 @@ function checkBros(cell){
 
 function debugCell(cell){
 	console.log(cell.x + ", "+ cell.y + " " + cell.alive + ", " + cell.count);
-}
-
-function start() {
-
 }
 
 function debugAll(cell){
@@ -211,19 +209,16 @@ function debugAll(cell){
 function printCells(){
 	//console.log(liveArray[0].x + ", " + liveArray[0].y);
 	for (i=0; i<endOfLiveArray; i++){
-		paintCell(liveArray[i]);	
+		paintCell(liveArray[i]);
+		console.log("printing liveArray[" + i + "]");	
+		console.log(liveArray[i].x + ", " + liveArray[i].y);
 	}
-	console.log("live printed");
+	console.log("live have been printed");
 	for (i=0; i<endOfBroArray; i++){
 		paintCell(broArray[i]);	
 	}
 	console.log(liveArray.length);
 	//console.log("number to check " + endOfLiveArray);
-	for (k=0; k<endOfLiveArray; k++){
-		console.log("number " + k);
-	//	debugCell(liveArray[k]);
-		checkBros(liveArray[k]);
-	}
 	
 	/*
 checkBros(liveArray[0]);
@@ -231,7 +226,71 @@ checkBros(liveArray[0]);
 */
 }
 
+function checker(){
+	for (k=0; k<endOfLiveArray; k++){
+		console.log("number " + k);
+	//	debugCell(liveArray[k]);
+		checkBros(liveArray[k]);
+	}
+}
 
+function subtractOneFromBros(cell){
+	
+}
+
+function step(){
+	console.log("stepping");
+	printLiveArray();
+	for (i=0; i<endOfLiveArray; i++){
+		var theCell = liveArray[i];
+		console.log("liveArray[" + i + "]");
+		//debugCell(liveArray[i]);
+		if (theCell.count < 2  && theCell.alive == true){
+			console.log("deleting cell " + theCell.x + ", " + theCell.y + "because < 2");
+			theCell.alive = false;
+			var lastLiveElement=liveArray[endOfLiveArray-1];
+			liveArray[i] = lastLiveElement;
+			liveArray[endOfLiveArray-1]=null;
+			broArray[endOfBroArray-1]=theCell;
+			grid[theCell.x][theCell.y]=theCell;
+			endOfLiveArray--;
+			i--;
+		}
+		if (theCell.count > 3  && theCell.alive == true){
+			console.log("deleting cell " + theCell.x + ", " + theCell.y + "because >3");
+			theCell.alive = false;
+			var lastLiveElement=liveArray[endOfLiveArray-1];
+			liveArray[i] = lastLiveElement;
+			liveArray[endOfLiveArray]=null;
+			broArray[endOfBroArray]=theCell;
+			grid[theCell.x][theCell.y]=theCell;
+			endOfLiveArray--;
+		}
+	printLiveArray();
+	}
+	/*
+
+	for (i=0; i<endOfBroArray; i++){
+		var theDeadCell = broArray[i];	
+	
+	}
+*/
+	clearIt();
+/*
+	console.log(liveArray[0].x + ", " + liveArray[0].y); 
+	console.log(liveArray[2].x + ", " + liveArray[2].y); 
+	console.log(liveArray[1].x + ", " + liveArray[1].y); 
+*/
+	printCells();
+}
+
+function printLiveArray(){
+	for (indexy=0; indexy<endOfLiveArray ; indexy++){
+		console.log("-------liveArray[" + indexy+"]= " + liveArray[indexy].x + ", "+ liveArray[indexy].y + " " + liveArray[indexy].alive + " " + liveArray[indexy].count ); 
+	}
+	
+	
+}
 </script>
 
 
@@ -291,7 +350,8 @@ Number of Generations ran 0 of <span id='numberToRun'>0</span>.
 <button onclick="testCell(2,2,true,4);">Create Cell</button>
 <button onclick="printCells();">Print Cells</button>
 <button onclick="debugAll();">Debug All Cells</button>
-
+<button onclick="checker();">CheckBros</button>
+<button onclick="step();">CheckBros</button>
 <br>
 
 </body>
