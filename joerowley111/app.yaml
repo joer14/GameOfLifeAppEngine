@@ -5,17 +5,17 @@ api_version: 1
 threadsafe: yes
 
 handlers:
+- url: /statics
+  static_dir: statics
+
 - url: /favicon\.ico
   static_files: favicon.ico
   upload: favicon\.ico
-  
+
 - url: /game
   static_files: statics/gameoflife.html
   upload: statics/gameoflife.html
 
+
 - url: .*
   script: main.app
-
-libraries:
-- name: webapp2
-  version: "2.5.2"
